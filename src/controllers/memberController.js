@@ -21,7 +21,7 @@ const requestToJoinGroup = async (req, res) => {
           error: "You are already part of this group or have a pending request.",
         });
       }
-      await createJoinRequest(groupId, userId);
+      await createJoinRequestDb(groupId, userId);
       res.status(200).json({message: "Request to join the group has been successfully sent.",});
     } catch (err) {
       console.error("Error requesting to join group:", err);
