@@ -1,0 +1,38 @@
+### Register a New User
+POST http://localhost:3000/users/registration
+Content-Type: application/json
+
+{
+  "email": "test1234@example.com",
+  "password": "Test1"
+}
+
+### Log In to Get Token
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "test1234@example.com",
+  "password": "Test1"
+}
+
+### Get User Information
+GET http://localhost:3000/users/:user_id
+Authorization: Bearer <token>
+
+### Log Out User
+POST http://localhost:3000/users/logout
+Authorization: Bearer <token>
+
+### Delete User by ID
+DELETE http://localhost:3000/users/delete/:user_id
+Authorization: Bearer <token>
+
+
+
+POST http://localhost:3000/rating/ HTTP/1.1 
+content-type: application/json
+
+{ "rating":2, "movie_id":123, "user_id":1
+
+}

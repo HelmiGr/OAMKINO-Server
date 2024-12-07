@@ -1,0 +1,6 @@
+## environment variables
+.env
+node_modules/
+
+# Ignore node_modules in the parent directory 
+../node_modules/
