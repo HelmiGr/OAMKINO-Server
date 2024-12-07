@@ -1,6 +1,6 @@
 const express = require('express');
 const { authToken } = require('../../config/auth');
-const { requestToJoinGroup, leaveGroup, checkUserRoleAndStatus } = require('../controllers/memberController');
+const { requestToJoinGroup, leaveGroup, checkUserRoleAndStatus, getGroupMembers, removeMember, acceptJoinRequest, rejectJoinRequest, } = require('../controllers/memberController');
 const memberRouter = express.Router();;
 
 // --- For users ---
