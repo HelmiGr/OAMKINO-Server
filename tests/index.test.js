@@ -1,67 +1,62 @@
 const { expect } = require("chai");
-const axios = require("axios");
-const { insertTestUser, getToken } = require("./config/test.js");
+const fetch = require("node-fetch");
+const { insertTestUser, deleteTestUser, getToken } = require("../config/test");
 
-const base_url = "http://localhost:3000/";
+const base_url = process.env.BASE_URL || "http://localhost:3000/";
 
-describe("POST /registration", () => {
-  const email = "test_registration@example.com";
+describe("POST /users/registration", () => {
+  const email = "test_registration2@example.com";
+  const user_name = "test_registration2";
   const password = "Test123";
-
   it("should register with valid email and password", async () => {
     const response = await fetch(base_url + "users/registration", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: email, password: password }),
+      body: JSON.stringify({
+        email,
+        user_name,
+        password,
+      }),
     });
 
     const data = await response.json();
-
-    expect(response.status).to.equal(200);
+    expect(response.status).to.equal(201);
     expect(data).to.be.an("object");
-    expect(data).to.have.property("id");
-    expect(data.id).to.be.a("number");
+    expect(data).to.have.property("user_id").that.is.a("number");
   });
 
   it("should not register a user with a password that does not meet complexity requirements", async () => {
-    const invalidPasswordEmail = "test_invalid@example.com";
-    const invalidPassword = "invalidpassword";
-
+    const weakPassword = "password";
     const response = await fetch(base_url + "users/registration", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: invalidPasswordEmail,
-        password: invalidPassword,
+        email: "weak_password@example.com",
+        user_name: "weak_password",
+        password: weakPassword,
       }),
     });
 
     const data = await response.json();
-
     expect(response.status).to.equal(400);
-
-    expect(data).to.be.an("object");
-    expect(data).to.have.property("error");
-    expect(data.error).to.equal(
-      "Password must contain at least one capital letter and one number."
-    );
+    expect(data)
+      .to.have.property("error")
+      .that.equals(
+        "Password must contain at least one capital letter and one number."
+      );
   });
 });
 
 describe("POST /users/login", () => {
   const email = "test_login@example.com";
+  const user_name = "test_login";
   const password = "Test123";
 
-  // Ensure the test user is inserted before tests
-  insertTestUser(email, password);
-
-  // before(async () => {
-  //   insertTestUser(email, password);
-  // });
+  insertTestUser(email, user_name, password);
 
   it("should login with valid credentials", async () => {
     const response = await fetch(base_url + "users/login", {
@@ -82,16 +77,11 @@ describe("POST /users/login", () => {
 
 describe("POST /users/logout", () => {
   const email = "test_logout@example.com";
+  const user_name = "test_logout";
   const password = "Test123";
 
-  insertTestUser(email, password);
+  insertTestUser(email, user_name, password);
   const token = `Bearer ${getToken(email)}`;
-
-  // let token;
-  // before(async () => {
-  //   insertTestUser(email, password);
-  //   token = `Bearer ${getToken(email)}`;
-  // });
 
   it("should log out successfully with a valid token", async () => {
     const response = await fetch(base_url + "users/logout", {
@@ -126,13 +116,14 @@ describe("POST /users/logout", () => {
 });
 
 describe("DELETE /users/delete/:userId", () => {
-  const email = "test_delete22@example.com";
+  const email = "test_delete@example.com";
+  const user_name = "test_delete";
   const password = "Test123";
 
   let token;
   let userId;
 
-  insertTestUser(email, password).then((id) => {
+  insertTestUser(email, user_name, password).then((id) => {
     userId = id; // Set the userId
     if (!userId) {
       throw new Error(`User not found for email: ${email}`);

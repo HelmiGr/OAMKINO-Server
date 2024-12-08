@@ -1,108 +1,179 @@
-const pool = require('../../config/db');
+const pool = require("../../config/db");
 
-// Check if the user is already a member or has a pending request
+// Check membership status
 const checkMembershipStatusDb = async (groupId, userId) => {
-    try {
-      const result = await pool.query(
-        "SELECT * FROM GroupMemberships WHERE group_id = $1 AND user_id = $2",
-        [groupId, userId]
-      );
-      return result;
-    } catch {
-      console.error('Error checking membership status:', error.message);
-      throw new Error('Database query failed');
-    }
-};
-  
-// Insert a join request into the GroupMemberships table
-const createJoinRequestDb = async (groupId, userId) => {
-    try {
-      await pool.query(
-        "INSERT INTO GroupMemberships (group_id, user_id, role, status) VALUES ($1, $2, $3, $4)",
-        [groupId, userId, "member", "pending"]
-      );
-    } catch {
-        console.error('Error creating join req in db:', error.message);
-        throw new Error('Database query failed');
-    }
+  const result = await pool.query(
+    "SELECT * FROM GroupMemberships WHERE group_id = $1 AND user_id = $2",
+    [groupId, userId]
+  );
+  return result.rows[0] || null;
 };
 
-// Remove a user from a group
-const removeUserDb = async (groupId, userId) => {
-    try {
-      await pool.query(
-        "DELETE FROM GroupMemberships WHERE group_id = $1 AND user_id = $2",
-        [groupId, userId]
-      );
-    } catch {
-        console.error('Error removing member from group:', error.message);
-        throw new Error('Database query failed');
-    }
-};
-  
-// Get member's role in group
-const checkMembershipRoleDb = async (groupId, userId) => {
-    try {
-      const result = await pool.query(
-        "SELECT role FROM GroupMemberships WHERE group_id = $1 AND user_id = $2",
-        [groupId, userId]
-      );
-      return result; // empty if no membership
-    } catch {
-        console.error('Error checking member role in db:', error.message);
-        throw new Error('Database query failed');
-    }
+// Create a membership request or invitation
+const createMembershipRequestDb = async (groupId, userId, role, status) => {
+  await pool.query(
+    "INSERT INTO GroupMemberships (group_id, user_id, role, status) VALUES ($1, $2, $3, $4)",
+    [groupId, userId, role, status]
+  );
 };
 
-// Fetch group members
+// Remove a user's membership
+const removeMembershipDb = async (groupId, userId) => {
+  await pool.query(
+    "DELETE FROM GroupMemberships WHERE group_id = $1 AND user_id = $2",
+    [groupId, userId]
+  );
+};
+
+// Update membership status and role
+const updateMembershipStatusDb = async (groupId, userId, role, status) => {
+  const result = await pool.query(
+    "UPDATE GroupMemberships SET role = $1, status = $2 WHERE group_id = $3 AND user_id = $4",
+    [role, status, groupId, userId]
+  );
+  return result.rowCount;
+};
+
+// Fetch all group members
 const fetchGroupMembersDb = async (groupId) => {
+  const result = await pool.query(
+    `SELECT u.user_id, u.user_name, gm.role
+     FROM GroupMemberships gm
+     JOIN Users u ON gm.user_id = u.user_id
+     WHERE gm.group_id = $1 AND gm.status = 'accepted'`,
+    [groupId]
+  );
+  return result.rows;
+};
+
+// Fetch pending join requests
+const fetchPendingRequestsDb = async (groupId) => {
+  const result = await pool.query(
+    `SELECT gm.user_id, gm.role, gm.status, u.user_name
+     FROM GroupMemberships gm
+     JOIN Users u ON gm.user_id = u.user_id
+     WHERE gm.group_id = $1 AND gm.status = 'pending'`,
+    [groupId]
+  );
+  return result.rows;
+};
+
+const fetchGroupAdminDb = async (groupId) => {
   try {
-    return await pool.query(
-      `SELECT u.user_id, u.email AS user_email, gm.role
-       FROM GroupMemberships gm
-       JOIN Users u ON gm.user_id = u.user_id
-       WHERE gm.group_id = $1 AND gm.status = 'accepted'`,
+    const result = await pool.query(
+      `
+      SELECT g.group_name, g.created_at, u.user_id AS admin_id, u.user_name AS admin_name
+      FROM Groups g
+      JOIN Users u ON g.owner_id = u.user_id
+      WHERE g.group_id = $1
+      `,
       [groupId]
     );
-  } catch (error) {
-    console.error('Error fetching group members:', error.message);
-    throw new Error('Database query failed');
+
+    if (result.rows.length === 0) {
+      return null; // If no group found, return null
+    }
+
+    return result.rows[0]; // Return the first (and only) row
+  } catch (err) {
+    console.error("Error fetching group admin from DB:", err);
+    throw new Error("Failed to fetch group admin from DB.");
   }
 };
 
-// Accept membership request
-const acceptMembershipRequestDb = async (groupId, userId) => {
+// Fetch user's groups
+const fetchUserGroupsDb = async (userId) => {
+  const result = await pool.query(
+    `SELECT g.group_id, g.group_name, g.created_at, u.user_name AS owner_name, gm.role
+     FROM Groups g
+     INNER JOIN GroupMemberships gm ON g.group_id = gm.group_id
+     INNER JOIN Users u ON g.owner_id = u.user_id
+     WHERE gm.user_id = $1
+     ORDER BY g.created_at DESC`,
+    [userId]
+  );
+  return result.rows;
+};
+
+// Fetch non-members of a group
+const fetchNonMembersDb = async (groupId, userId) => {
+  const result = await pool.query(
+    `SELECT u.user_id, u.user_name
+     FROM Users u
+     WHERE u.user_id NOT IN (
+       SELECT gm.user_id FROM GroupMemberships gm WHERE gm.group_id = $1
+     )
+     AND u.user_id != $2`,
+    [groupId, userId]
+  );
+  return result.rows;
+};
+
+// Fetch a user's role in a group
+// const fetchUserRoleDb = async (groupId, userId) => {
+//   const result = await pool.query(
+//     "SELECT role FROM GroupMemberships WHERE group_id = $1 AND user_id = $2",
+//     [groupId, userId]
+//   );
+//   return result.rows[0];
+// };
+const fetchUserRoleDb = async (groupId, userId) => {
   try {
-    await pool.query(
-      "UPDATE GroupMemberships SET status = 'accepted' WHERE group_id = $1 AND user_id = $2",
+    const result = await pool.query(
+      `
+      SELECT role, status
+      FROM GroupMemberships
+      WHERE group_id = $1 AND user_id = $2
+      `,
       [groupId, userId]
     );
-  } catch (error) {
-    console.error('Error accepting join request:', error.message);
-    throw new Error('Database query failed');
+
+    if (result.rowCount === 0) {
+      return null; // No membership found for this user in the group
+    }
+
+    return result.rows[0]; // Return the role and status if found
+  } catch (err) {
+    console.error("Error fetching membership details:", err);
+    throw new Error("Failed to fetch membership details.");
   }
 };
 
-// Reject membership request
-const rejectMembershipRequestDb = async (groupId, userId) => {
+// Fetch invitation details from the database
+const fetchUserInvitationDb = async (groupId, userId) => {
   try {
-    await pool.query(
-      "UPDATE GroupMemberships SET status = 'rejected' WHERE group_id = $1 AND user_id = $2",
-      [groupId, userId]
+    const result = await pool.query(
+      `
+      SELECT gm.user_id, u.user_name, g.group_name
+      FROM GroupMemberships gm
+      JOIN Users u ON gm.user_id = u.user_id
+      JOIN Groups g ON gm.group_id = g.group_id
+      WHERE gm.user_id = $1 AND gm.group_id = $2 AND gm.status = 'invited'
+      `,
+      [userId, groupId]
     );
-  } catch (error) {
-    console.error('Error rejecting join request:', error.message);
-    throw new Error('Database query failed');
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return result.rows[0];
+  } catch (err) {
+    console.error("Error fetching invitation from DB:", err);
+    throw new Error("Failed to fetch invitations.");
   }
 };
-
 
 module.exports = {
   checkMembershipStatusDb,
-  createJoinRequestDb,
-  removeUserDb,
-  checkMembershipRoleDb,
+  createMembershipRequestDb,
+  removeMembershipDb,
+  updateMembershipStatusDb,
   fetchGroupMembersDb,
-  acceptMembershipRequestDb,
-  rejectMembershipRequestDb,
+  fetchPendingRequestsDb,
+  fetchGroupAdminDb,
+  fetchUserGroupsDb,
+  fetchNonMembersDb,
+  fetchUserRoleDb,
+  fetchUserInvitationDb,
 };

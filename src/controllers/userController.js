@@ -1,6 +1,12 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { getUserById, checkEmailExists, insertUser, deleteUserById } = require("../models/userModel");
+const {
+  getUserById,
+  checkEmailExists,
+  insertUser,
+  checkUserExists,
+  deleteUserById,
+} = require("../models/userModel");
 
 // Get user by ID
 const getUser = async (req, res) => {
@@ -25,30 +31,72 @@ const getUser = async (req, res) => {
 };
 
 // Register a new user
+// const registerUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return res.status(400).send({ error: "Email and password are required" });
+//     }
+
+//     const existingUser = await checkEmailExists(email);
+//     if (existingUser.rows.length > 0) {
+//       return res.status(400).json({ error: "Email already exists" });
+//     }
+
+//     const passwordPattern = /^(?=.*[A-Z])(?=.*\d).+$/;
+//     if (!passwordPattern.test(password)) {
+//       return res.status(400).json({
+//         error: "Password must contain at least one capital letter and one number.",
+//       });
+//     }
+
+//     const passwordHash = await bcrypt.hash(password, 10);
+//     const result = await insertUser(email, passwordHash);
+
+//     res.status(200).json({ id: result.rows[0].user_id });
+//   } catch (error) {
+//     console.error("Error during registration:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
 const registerUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).send({ error: "Email and password are required" });
+    const { email, user_name, password } = req.body;
+    if (!email || !user_name || !password) {
+      return res
+        .status(400)
+        .json({ error: "Email, username, and password are required." });
     }
-
-    const existingUser = await checkEmailExists(email);
-    if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: "Email already exists" });
+    const existingUsers = await checkUserExists(email, user_name);
+    if (existingUsers.length > 0) {
+      const conflict = existingUsers[0];
+      if (conflict.email === email) {
+        return res.status(400).json({ error: "Email already exists." });
+      }
+      if (conflict.user_name === user_name) {
+        return res.status(400).json({ error: "Username already exists." });
+      }
     }
-
-    const passwordPattern = /^(?=.*[A-Z])(?=.*\d).+$/;
-    if (!passwordPattern.test(password)) {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).+$/;
+    if (!passwordRegex.test(password)) {
       return res.status(400).json({
-        error: "Password must contain at least one capital letter and one number.",
+        error:
+          "Password must contain at least one capital letter and one number.",
       });
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const { rows: newUser } = await insertUser(
+      email,
+      user_name,
+      hashedPassword
+    );
 
-    const passwordHash = await bcrypt.hash(password, 10);
-    const result = await insertUser(email, passwordHash);
-
-    res.status(200).json({ id: result.rows[0].user_id });
+    res.status(201).json({
+      message: "User registered successfully.",
+      user_id: newUser[0].user_id,
+    });
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -100,7 +148,7 @@ const deleteUser = async (req, res) => {
     }
 
     const result = await deleteUserById(userId);
-    
+
     /*if (result.rowCount === 0) {
       return res.status(404).json({ message: "User not found." });
     }*/
@@ -121,6 +169,5 @@ const logoutUser = (req, res) => {
     res.status(500).json({ error: "Logout failed" });
   }
 };
-
 
 module.exports = { getUser, registerUser, loginUser, deleteUser, logoutUser };

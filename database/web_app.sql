@@ -1,10 +1,12 @@
 -- Users table
-CREATE TABLE Users (
-    user_id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE
+    Users (
+        user_id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        user_name VARCHAR(255) UNIQUE NOT NULL, --Added user_name
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
 CREATE TABLE groups (
     group_id SERIAL PRIMARY KEY,
@@ -17,9 +19,9 @@ CREATE TABLE groups (
 CREATE TABLE GroupMemberships (
     group_id INT REFERENCES Groups(group_id) ON DELETE CASCADE,
     user_id INT REFERENCES Users(user_id) ON DELETE CASCADE,
-    role VARCHAR(50) CHECK (role IN ('admin', 'member')), -- Roles are separate from status
-    status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected')), -- Membership status
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    role VARCHAR(50) CHECK (role IN ('admin', 'member', 'pending')), -- Roles are separate from status
+    status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'rejected', 'invited')), -- Membership status
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Tracks when the record was created
     PRIMARY KEY (group_id, user_id)
 );
 

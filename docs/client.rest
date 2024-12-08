@@ -3,17 +3,19 @@ POST http://localhost:3000/users/registration
 Content-Type: application/json
 
 {
-  "email": "test1234@example.com",
+  "email": "test1000@example.com",
+  "user_name": "test1000",
   "password": "Test1"
 }
 
 ### Log In to Get Token
-POST http://localhost:3000/users/login
+POST http://localhost:3001/users/login
 Content-Type: application/json
 
 {
-  "email": "test1234@example.com",
-  "password": "Test1"
+  "email": "test00@gmail.com",
+  "user_name": "test00",
+  "password": "Test00"
 }
 
 ### Get User Information
@@ -36,3 +38,26 @@ content-type: application/json
 { "rating":2, "movie_id":123, "user_id":1
 
 }
+
+
+### List all groups
+GET http://localhost:3001/groups/all
+
+### View a specific group by ID
+GET http://localhost:3001/groups/all/2
+
+### Delete a group by ID (only for the owner)
+DELETE http://localhost:3001/groups/delete/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlbWFpbCI6InRlc3QwMEBnbWFpbC5jb20iLCJpYXQiOjE3MzM2NjQxNjUsImV4cCI6MTczMzcxODE2NX0.su7CbMwQSdFtQ7CUgGOdlcV2LSjs37Np_lqdW3ZPPSo
+
+### Role a group by ID (only for the owner)
+GET http://localhost:3001/groups/2/role
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlbWFpbCI6InRlc3QwMEBnbWFpbC5jb20iLCJpYXQiOjE3MzM2NjQxNjUsImV4cCI6MTczMzcxODE2NX0.su7CbMwQSdFtQ7CUgGOdlcV2LSjs37Np_lqdW3ZPPSo
+
+###
+POST http://localhost:3001/groups/3/request
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlbWFpbCI6InRlc3QwMEBnbWFpbC5jb20iLCJpYXQiOjE3MzM2NjQxNjUsImV4cCI6MTczMzcxODE2NX0.su7CbMwQSdFtQ7CUgGOdlcV2LSjs37Np_lqdW3ZPPSo
+

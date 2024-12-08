@@ -4,7 +4,8 @@ const { authToken } = require("./config/auth.js"); // get the authentication wor
 
 // Routers
 const userRouter = require("./src/routes/userRoutes.js");
-const groupRouter = require("./src/routes/groupRoutes.js"); 
+const groupRouter = require("./src/routes/groupRoutes.js");
+const memberRouter = require("./src/routes/memberRoutes.js");
 const reviewRouter = require("./src/routes/reviewRoutes.js");
 const ratingRouter = require("./src/routes/ratingRoutes.js");
 const postRouter = require("./src/routes/postRoutes.js");
@@ -14,7 +15,6 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-
 
 //authentication should be working
 app.get("/protected", authToken, (req, res) => {
@@ -26,14 +26,13 @@ app.get("/protected", authToken, (req, res) => {
 
 app.use("/users", userRouter);
 
-app.use("/groups", groupRouter); 
+app.use("/groups", groupRouter, memberRouter);
 
 app.use("/reviews", reviewRouter);
 
 app.use("/rating", ratingRouter);
 
 app.use("/forum", postRouter);
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
