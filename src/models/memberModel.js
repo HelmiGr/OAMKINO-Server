@@ -71,10 +71,10 @@ const fetchGroupAdminDb = async (groupId) => {
     );
 
     if (result.rows.length === 0) {
-      return null; // If no group found, return null
+      return null;
     }
 
-    return result.rows[0]; // Return the first (and only) row
+    return result.rows[0];
   } catch (err) {
     console.error("Error fetching group admin from DB:", err);
     throw new Error("Failed to fetch group admin from DB.");
@@ -109,14 +109,6 @@ const fetchNonMembersDb = async (groupId, userId) => {
   return result.rows;
 };
 
-// Fetch a user's role in a group
-// const fetchUserRoleDb = async (groupId, userId) => {
-//   const result = await pool.query(
-//     "SELECT role FROM GroupMemberships WHERE group_id = $1 AND user_id = $2",
-//     [groupId, userId]
-//   );
-//   return result.rows[0];
-// };
 const fetchUserRoleDb = async (groupId, userId) => {
   try {
     const result = await pool.query(
@@ -129,10 +121,10 @@ const fetchUserRoleDb = async (groupId, userId) => {
     );
 
     if (result.rowCount === 0) {
-      return null; // No membership found for this user in the group
+      return null;
     }
 
-    return result.rows[0]; // Return the role and status if found
+    return result.rows[0];
   } catch (err) {
     console.error("Error fetching membership details:", err);
     throw new Error("Failed to fetch membership details.");

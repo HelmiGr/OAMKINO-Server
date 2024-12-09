@@ -5,7 +5,6 @@ const {
   updateMembershipStatusDb,
   fetchGroupMembersDb,
   fetchPendingRequestsDb,
-  // fetchGroupAdminDb,
   fetchUserGroupsDb,
   fetchNonMembersDb,
   fetchUserRoleDb,
@@ -51,30 +50,6 @@ const leaveGroup = async (req, res) => {
     res.status(500).json({ error: "Failed to leave the group." });
   }
 };
-
-// Fetch group membership status
-// const getMembershipStatus = async (req, res) => {
-//   const { groupId } = req.params;
-//   const userId = req.user.user_id;
-
-//   try {
-//     const membership = await checkMembershipStatusDb(groupId, userId);
-
-//     if (!membership) {
-//       return res.status(200).json({ isMember: false, isInvited: false });
-//     }
-
-//     const { role, status } = membership;
-//     res.status(200).json({
-//       isMember: status === "accepted",
-//       isInvited: status === "pending",
-//       role,
-//     });
-//   } catch (err) {
-//     console.error("Error fetching membership status:", err);
-//     res.status(500).json({ error: "Failed to fetch membership status." });
-//   }
-// };
 
 // Accept a membership request
 const acceptMembershipRequest = async (req, res) => {
@@ -146,38 +121,6 @@ const getPendingRequests = async (req, res) => {
   }
 };
 
-// Fetch group details
-// const getGroupAdmin = async (req, res) => {
-//   const { groupId } = req.params;
-
-//   try {
-//     const groupDetails = await fetchGroupAdminDb(groupId);
-
-//     if (!groupDetails) {
-//       return res.status(404).json({ error: "Group not found." });
-//     }
-
-//     // Send the fetched group details as a response
-//     res.status(200).json(groupDetails);
-//   } catch (err) {
-//     console.error("Error fetching group details:", err);
-//     res.status(500).json({ error: "Failed to fetch group details." });
-//   }
-// };
-
-// Fetch user's groups
-// const getUserGroups = async (req, res) => {
-//   const userId = req.user.user_id;
-
-//   try {
-//     const groups = await fetchUserGroupsDb(userId);
-//     res.status(200).json(groups);
-//   } catch (err) {
-//     console.error("Error fetching user's groups:", err);
-//     res.status(500).json({ error: "Failed to fetch user's groups." });
-//   }
-// };
-
 const getYourGroups = async (req, res) => {
   const userId = req.user.user_id;
 
@@ -220,10 +163,9 @@ const inviteToGroup = async (req, res) => {
 const respondToInvitation = async (req, res) => {
   const { groupId } = req.params;
   const { response } = req.body; // "accept" or "reject"
-  const userId = req.user.user_id; // Authenticated user ID
+  const userId = req.user.user_id;
 
   try {
-    // Check membership status
     const membership = await checkMembershipStatusDb(groupId, userId);
 
     if (!membership || membership.status !== "invited") {
@@ -231,11 +173,9 @@ const respondToInvitation = async (req, res) => {
     }
 
     if (response === "accept") {
-      // Update status to "accepted" and role to "member"
       await updateMembershipStatusDb(groupId, userId, "member", "accepted");
       return res.status(200).json({ message: "You have joined the group." });
     } else if (response === "reject") {
-      // Remove the invitation from the database
       await removeMembershipDb(groupId, userId);
       return res
         .status(200)
@@ -274,11 +214,10 @@ const getUserRole = async (req, res) => {
     const membership = await fetchUserRoleDb(groupId, userId);
 
     if (!membership) {
-      return res.status(200).json({ isMember: false, isInvited: false }); // No membership found
+      return res.status(200).json({ isMember: false, isInvited: false });
     }
 
-    const { role, status } = membership; // Destructure role and status from the membership object
-
+    const { role, status } = membership;
     return res.status(200).json({
       isMember: status === "accepted",
       isInvited: status === "invited",
@@ -289,48 +228,6 @@ const getUserRole = async (req, res) => {
     return res.status(500).json({ error: "Failed to fetch user role." });
   }
 };
-
-// const getUserRole = async (req, res) => {
-//   const { groupId } = req.params;
-//   const userId = req.user.user_id;
-
-//   try {
-//     const membership = await fetchUserRoleDb(groupId, userId);
-
-//     if (!membership) {
-//       return res.status(200).json({ isMember: false, isInvited: false });
-//     }
-
-//     const { role, status } = result.rows[0];
-//     res.status(200).json({
-//       isMember: status === "accepted",
-//       isInvited: status === "invited",
-//       role,
-//     });
-
-//     // if (!membership) {
-//     //   return res
-//     //     .status(404)
-//     //     .json({ error: "User is not a member of this group." });
-//     // }
-
-//     // // Derive flags based on the membership data
-//     // const isAdmin = membership.role === "admin";
-//     // const isMember = membership.status === "accepted";
-//     // const isInvited = membership.status === "invited";
-
-//     // // Return the role and membership status flags
-//     // return res.status(200).json({
-//     //   role: membership.role,
-//     //   isMember,
-//     //   isInvited,
-//     //   isAdmin,
-//     // });
-//   } catch (err) {
-//     console.error("Error fetching user role:", err);
-//     return res.status(500).json({ error: "Failed to fetch user role." });
-//   }
-// };
 
 // Function to fetch the invitation for a user in a group
 const getUserInvitation = async (req, res) => {
@@ -354,13 +251,10 @@ const getUserInvitation = async (req, res) => {
 module.exports = {
   requestToJoinGroup,
   leaveGroup,
-  // getMembershipStatus,
   acceptMembershipRequest,
   rejectMembershipRequest,
   getGroupMembers,
   getPendingRequests,
-  // getGroupAdmin,
-  //getUserGroups,
   inviteToGroup,
   respondToInvitation,
   getNonMembers,

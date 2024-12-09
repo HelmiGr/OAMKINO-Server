@@ -1,8 +1,8 @@
 const { expect } = require("chai");
 const fetch = require("node-fetch");
-const { insertTestUser, deleteTestUser, getToken } = require("../config/test");
+const { insertTestUser, getToken } = require("../config/test");
 
-const base_url = process.env.BASE_URL || "http://localhost:3000/";
+const base_url = process.env.BASE_URL || "http://localhost:3001/";
 
 describe("POST /users/registration", () => {
   const email = "test_registration2@example.com";
@@ -116,19 +116,15 @@ describe("POST /users/logout", () => {
 });
 
 describe("DELETE /users/delete/:userId", () => {
-  const email = "test_delete@example.com";
-  const user_name = "test_delete";
-  const password = "Test123";
-
-  let token;
   let userId;
+  let token;
 
-  insertTestUser(email, user_name, password).then((id) => {
-    userId = id; // Set the userId
-    if (!userId) {
-      throw new Error(`User not found for email: ${email}`);
-    }
-    // Set token
+  before(async () => {
+    const email = "test_delete@example.com";
+    const user_name = "test_delete";
+    const password = "Test123";
+
+    userId = await insertTestUser(email, user_name, password);
     token = `Bearer ${getToken(email)}`;
   });
 
@@ -141,6 +137,7 @@ describe("DELETE /users/delete/:userId", () => {
       },
     });
     const data = await response.json();
+
     expect(response.status).to.equal(200);
     expect(data)
       .to.have.property("message")
@@ -148,7 +145,7 @@ describe("DELETE /users/delete/:userId", () => {
   });
 
   it("should not delete a user with SQL injection", async () => {
-    const response = await fetch(base_url + "users/delete/id=0 or id > 0", {
+    const response = await fetch(`${base_url}users/delete/id=0 or id > 0`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -156,12 +153,13 @@ describe("DELETE /users/delete/:userId", () => {
       },
     });
     const data = await response.json();
+
     expect(response.status).to.equal(400);
     expect(data).to.have.property("message").that.equals("Invalid user ID.");
   });
 
   it("should fail to delete with an invalid token", async () => {
-    const response = await fetch(base_url + "users/delete/1", {
+    const response = await fetch(`${base_url}users/delete/${userId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -169,6 +167,7 @@ describe("DELETE /users/delete/:userId", () => {
       },
     });
     const data = await response.json();
+
     expect(response.status).to.equal(403);
     expect(data).to.have.property("message").that.equals("Invalid token.");
   });

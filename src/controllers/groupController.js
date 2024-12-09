@@ -9,14 +9,11 @@ const {
 // Create group
 const createGroup = async (req, res) => {
   const { group_name } = req.body;
-  const userId = req.user.user_id; // Get user ID from auth token
+  const userId = req.user.user_id;
 
   try {
-    // add group to db
     const groupResult = await createGroupToDb(group_name, userId);
     const groupId = groupResult.rows[0].group_id;
-
-    // Add the creator to GroupMemberships as an admin
     await addGroupAdmin(groupId, userId);
 
     res.status(201).json({ message: "Group created successfully", groupId });

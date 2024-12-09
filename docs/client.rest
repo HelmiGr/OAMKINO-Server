@@ -1,11 +1,11 @@
 ### Register a New User
-POST http://localhost:3000/users/registration
+POST http://localhost:3001/users/registration
 Content-Type: application/json
 
 {
-  "email": "test1000@example.com",
-  "user_name": "test1000",
-  "password": "Test1"
+  "email": "test00@example.com",
+  "user_name": "test00",
+  "password": "Test00"
 }
 
 ### Log In to Get Token
@@ -19,20 +19,20 @@ Content-Type: application/json
 }
 
 ### Get User Information
-GET http://localhost:3000/users/:user_id
+GET http://localhost:3001/users/:user_id
 Authorization: Bearer <token>
 
 ### Log Out User
-POST http://localhost:3000/users/logout
+POST http://localhost:3001/users/logout
 Authorization: Bearer <token>
 
 ### Delete User by ID
-DELETE http://localhost:3000/users/delete/:user_id
+DELETE http://localhost:3001/users/delete/:user_id
 Authorization: Bearer <token>
 
 
 
-POST http://localhost:3000/rating/ HTTP/1.1 
+POST http://localhost:3001/rating/ HTTP/1.1 
 content-type: application/json
 
 { "rating":2, "movie_id":123, "user_id":1
@@ -56,7 +56,7 @@ GET http://localhost:3001/groups/2/role
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlbWFpbCI6InRlc3QwMEBnbWFpbC5jb20iLCJpYXQiOjE3MzM2NjQxNjUsImV4cCI6MTczMzcxODE2NX0.su7CbMwQSdFtQ7CUgGOdlcV2LSjs37Np_lqdW3ZPPSo
 
-###
+###request join group
 POST http://localhost:3001/groups/3/request
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlbWFpbCI6InRlc3QwMEBnbWFpbC5jb20iLCJpYXQiOjE3MzM2NjQxNjUsImV4cCI6MTczMzcxODE2NX0.su7CbMwQSdFtQ7CUgGOdlcV2LSjs37Np_lqdW3ZPPSo

@@ -30,37 +30,6 @@ const getUser = async (req, res) => {
   }
 };
 
-// Register a new user
-// const registerUser = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       return res.status(400).send({ error: "Email and password are required" });
-//     }
-
-//     const existingUser = await checkEmailExists(email);
-//     if (existingUser.rows.length > 0) {
-//       return res.status(400).json({ error: "Email already exists" });
-//     }
-
-//     const passwordPattern = /^(?=.*[A-Z])(?=.*\d).+$/;
-//     if (!passwordPattern.test(password)) {
-//       return res.status(400).json({
-//         error: "Password must contain at least one capital letter and one number.",
-//       });
-//     }
-
-//     const passwordHash = await bcrypt.hash(password, 10);
-//     const result = await insertUser(email, passwordHash);
-
-//     res.status(200).json({ id: result.rows[0].user_id });
-//   } catch (error) {
-//     console.error("Error during registration:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
-
 const registerUser = async (req, res) => {
   try {
     const { email, user_name, password } = req.body;
@@ -126,7 +95,7 @@ const loginUser = async (req, res) => {
       { expiresIn: "15h" }
     );
 
-    res.json({
+    res.status(200).json({
       message: "Login successful",
       token,
       userId: user.user_id,
@@ -140,29 +109,41 @@ const loginUser = async (req, res) => {
 
 // Delete user
 const deleteUser = async (req, res) => {
+  const userId = parseInt(req.params.id, 10);
+  if (isNaN(userId)) {
+    return res.status(400).json({ message: "Invalid user ID." });
+  }
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(" ")[1];
+  if (!token) {
+    return res.status(403).json({ message: "Invalid token." });
+  }
   try {
-    const userId = parseInt(req.params.id, 10);
-
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: "Invalid user ID." });
-    }
-
+    jwt.verify(token, process.env.JWT_SECRET_KEY); // Validate token
     const result = await deleteUserById(userId);
-
-    /*if (result.rowCount === 0) {
-      return res.status(404).json({ message: "User not found." });
-    }*/
-
-    res.status(200).json({ message: "User deleted successfully" });
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
+    if (error.name === "JsonWebTokenError") {
+      return res.status(403).json({ message: "Invalid token." });
+    }
     console.error("Error deleting user:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 // Logout user
 const logoutUser = (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(403).json({ message: "Invalid token." });
+    }
+    const token = authHeader.split(" ")[1];
+    try {
+      jwt.verify(token, process.env.JWT_SECRET_KEY);
+    } catch (err) {
+      return res.status(403).json({ message: "Invalid token." });
+    }
     res.status(200).json({ message: "Successfully logged out" });
   } catch (error) {
     console.error("Error during logout:", error);
