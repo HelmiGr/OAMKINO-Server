@@ -13,7 +13,7 @@ POST http://localhost:3001/users/login
 Content-Type: application/json
 
 {
-  "email": "test00@gmail.com",
+  "email": "test00@example.com",
   "user_name": "test00",
   "password": "Test00"
 }
@@ -54,10 +54,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlb
 ### Role a group by ID (only for the owner)
 GET http://localhost:3001/groups/2/role
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlbWFpbCI6InRlc3QwMEBnbWFpbC5jb20iLCJpYXQiOjE3MzM2NjQxNjUsImV4cCI6MTczMzcxODE2NX0.su7CbMwQSdFtQ7CUgGOdlcV2LSjs37Np_lqdW3ZPPSo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJlbWFpbCI6InRlc3QwMEBleGFtcGxlLmNvbSIsImlhdCI6MTczMzc2MDAwMSwiZXhwIjoxNzMzODE0MDAxfQ.-8hIS2IcnIlAKzCRX93dyBjy-MRSK1jclY37wJMAGpw
 
 ###request join group
 POST http://localhost:3001/groups/3/request
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE0LCJlbWFpbCI6InRlc3QwMEBnbWFpbC5jb20iLCJpYXQiOjE3MzM2NjQxNjUsImV4cCI6MTczMzcxODE2NX0.su7CbMwQSdFtQ7CUgGOdlcV2LSjs37Np_lqdW3ZPPSo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyLCJlbWFpbCI6InRlc3QwMEBleGFtcGxlLmNvbSIsImlhdCI6MTczMzc2MDAwMSwiZXhwIjoxNzMzODE0MDAxfQ.-8hIS2IcnIlAKzCRX93dyBjy-MRSK1jclY37wJMAGpw
 
