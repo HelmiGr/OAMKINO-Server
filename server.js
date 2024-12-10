@@ -9,6 +9,7 @@ const memberRouter = require("./src/routes/memberRoutes.js");
 const reviewRouter = require("./src/routes/reviewRoutes.js");
 const ratingRouter = require("./src/routes/ratingRoutes.js");
 const postRouter = require("./src/routes/postRoutes.js");
+const groupMoviesRouter = require("./src/routes/groupMoviesRoutes.js");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -33,6 +34,8 @@ app.use("/reviews", reviewRouter);
 app.use("/rating", ratingRouter);
 
 app.use("/forum", postRouter);
+
+app.use("/Customgroup", groupMoviesRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

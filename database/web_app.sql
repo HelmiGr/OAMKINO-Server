@@ -25,6 +25,16 @@ CREATE TABLE GroupMemberships (
     PRIMARY KEY (group_id, user_id)
 );
 
+---add movie in group page table
+CREATE TABLE GroupMovies (
+    id SERIAL PRIMARY KEY,             
+    group_id INT NOT NULL,              
+    movie_id VARCHAR(255) NOT NULL,     
+    added_by INT NOT NULL,              
+    added_at TIMESTAMP DEFAULT NOW(),   
+    FOREIGN KEY (group_id) REFERENCES Groups(group_id) ON DELETE CASCADE, -- Xóa nhóm sẽ xóa bản ghi này
+    FOREIGN KEY (added_by) REFERENCES Users(user_id) ON DELETE CASCADE    -- Xóa người dùng sẽ xóa bản ghi này
+);
 
 -- Movies table
 CREATE TABLE Movies (
