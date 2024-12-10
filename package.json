@@ -2,11 +2,11 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "testStart": "cross-env NODE_ENV=test nodemon server.js",
+    "testStart": "cross-env NODE_ENV=test nodemon index.js",
     "test": "mocha tests/**/*.test.js",
-    "devStart": "cross-env NODE_ENV=development nodemon server.js"
+    "devStart": "cross-env NODE_ENV=development nodemon index.js"
   },
   "keywords": [],
   "author": "",
