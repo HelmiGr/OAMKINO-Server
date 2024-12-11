@@ -43,8 +43,6 @@ const getGroupMoviesController = async (req, res) => {
     if (groupMovies.length === 0) {
       return res.status(404).json({ error: "No movies found for this group." });
     }
-
-    console.log("Response Sent to Frontend:", groupMovies);
     res.status(200).json(groupMovies);
   } catch (error) {
     console.error("Error fetching group movies:", error);
