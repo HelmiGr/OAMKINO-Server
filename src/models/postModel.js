@@ -1,4 +1,3 @@
-//const db = require("../../config/db");
 const pool = require("../../config/db");
 
 // gets all posts from db
@@ -9,6 +8,18 @@ async function fetchPostsFromDb(groupId) {
     return result;
   } catch {
     console.error("Error fetching posts:", error.message);
+    throw new Error("Database query failed");
+  }
+}
+
+// gets group name
+async function fetchGroupNameFromDb(groupId) {
+  try {
+    const query = `SELECT group_name FROM groups WHERE group_id = $1`;
+    const result = await pool.query(query, [groupId]);
+    return result;
+  } catch {
+    console.error("Error fetching group name:", error.message);
     throw new Error("Database query failed");
   }
 }
@@ -64,6 +75,7 @@ async function searchUsersByTerm(searchTerm) {
 
 module.exports = {
   fetchPostsFromDb,
+  fetchGroupNameFromDb,
   addPostToDb,
   updatePostInDb,
   deletePostFromDb,

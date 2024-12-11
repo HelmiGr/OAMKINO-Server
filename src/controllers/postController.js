@@ -1,17 +1,19 @@
 const {
   fetchPostsFromDb,
+  fetchGroupNameFromDb,
   addPostToDb,
   updatePostInDb,
   deletePostFromDb,
   searchUsersByTerm,
 } = require("../models/postModel");
-// const Post = require('../dto/Post.js');
 
 // fetch all posts based on group_id
+// fetch group name too
 const fetchPosts = async (req, res) => {
   const { id } = req.params; // group_id
   try {
     const { rows } = await fetchPostsFromDb(id);
+    // const result = await fetchGroupNameFromDb(id);
     return res.status(200).json(rows);
   } catch (error) {
     console.error("Error in postController", error.message);
