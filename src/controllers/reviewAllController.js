@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { fetchAllReviews } = require("../models/reviewModel");
+const { fetchAllReviews } = require("../models/reviewAllModel");
 
 // Create a new review
 

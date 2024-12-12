@@ -6,7 +6,7 @@ const { authToken } = require("./config/auth.js"); // get the authentication wor
 const userRouter = require("./src/routes/userRoutes.js");
 const groupRouter = require("./src/routes/groupRoutes.js");
 const memberRouter = require("./src/routes/memberRoutes.js");
-const reviewRouter = require("./src/routes/reviewRoutes.js");
+// const reviewRouter = require("./src/routes/reviewRoutes.js");
 const ratingRouter = require("./src/routes/ratingRoutes.js");
 const postRouter = require("./src/routes/postRoutes.js");
 const groupMoviesRouter = require("./src/routes/groupMoviesRoutes.js");
@@ -31,7 +31,7 @@ app.use("/users", userRouter);
 
 app.use("/groups", groupRouter, memberRouter);
 
-app.use("/reviews", reviewRouter);
+// app.use("/reviews", reviewRouter);
 
 app.use("/rating", ratingRouter);
 

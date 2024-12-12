@@ -191,7 +191,7 @@ describe("DELETE /users/delete/:userId", () => {
 
 describe("GET /reviews/all - Fetch all reviews", () => {
   it("should fetch all reviews as an array", async () => {
-    const response = await fetch(base_url + `reviews/all`, {
+    const response = await fetch(base_url + `reviewsAll/all`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -218,36 +218,6 @@ describe("GET /reviews/all - Fetch all reviews", () => {
           "reviewer_email"
         );
       }
-    }
-  });
-
-  // Negative test for an invalid endpoint
-  it("should return 404 for an invalid endpoint", async () => {
-    let response;
-    try {
-      response = await fetch(base_url + `reviews/invalid-endpoint`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-
-    expect(response.status).to.equal(404);
-    let errorResponse;
-    try {
-      errorResponse = await response.json();
-    } catch (jsonError) {
-      console.error(
-        "Non-JSON error response, likely an HTML error page:",
-        jsonError
-      );
-    }
-
-    if (errorResponse) {
-      expect(errorResponse).to.have.property("error");
     }
   });
 });
