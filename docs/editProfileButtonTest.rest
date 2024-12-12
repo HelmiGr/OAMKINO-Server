@@ -1,0 +1,12 @@
+### Get User by User ID
+GET http://localhost:3001/user/1
+
+### Update User by User ID
+PUT http://localhost:3001/user/1
+Content-Type: application/json
+
+{
+    "user_name": "Jane Doe5",
+    "email": "jane@example.com",
+    "profile_pic": "https://example.com/profile.jpg"
+}
