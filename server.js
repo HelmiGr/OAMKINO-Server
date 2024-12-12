@@ -10,6 +10,7 @@ const reviewRouter = require("./src/routes/reviewRoutes.js");
 const ratingRouter = require("./src/routes/ratingRoutes.js");
 const postRouter = require("./src/routes/postRoutes.js");
 const groupMoviesRouter = require("./src/routes/groupMoviesRoutes.js");
+const favouriteRouter = require("./src/routes/favouriteRoutes.js");
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -34,6 +35,8 @@ app.use("/reviews", reviewRouter);
 app.use("/rating", ratingRouter);
 
 app.use("/forum", postRouter);
+
+app.use("/favorites", favouriteRouter);
 
 app.use("/Customgroup", groupMoviesRouter);
 

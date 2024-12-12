@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs");
+const { hash, compare } = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {
   getUserById,
@@ -55,7 +55,7 @@ const registerUser = async (req, res) => {
           "Password must contain at least one capital letter and one number.",
       });
     }
-    const hashedPassword = await bcryptjs.hash(password, 10);
+    const hashedPassword = await hash(password, 10);
     const { rows: newUser } = await insertUser(
       email,
       user_name,
@@ -84,7 +84,7 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    const isPasswordValid = await bcryptjs.compare(password, user.password_hash);
+    const isPasswordValid = await compare(password, user.password_hash);
     if (!isPasswordValid) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
