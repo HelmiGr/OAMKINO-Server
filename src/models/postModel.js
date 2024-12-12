@@ -43,7 +43,7 @@ async function addPostToDb(message, group_id, user_id) {
 // updates a post's content in db
 async function updatePostInDb(messageId, message) {
   try {
-    const query = `UPDATE messages SET messages = $1, timestamp = CURRENT_TIMESTAMP WHERE message_id = $2 RETURNING *;`;
+    const query = `UPDATE messages SET message = $1, timestamp = CURRENT_TIMESTAMP WHERE message_id = $2 RETURNING *;`;
     const result = await pool.query(query, [message, messageId]);
     return result;
   } catch {
