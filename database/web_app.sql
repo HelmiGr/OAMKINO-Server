@@ -131,12 +131,25 @@ CREATE TABLE
         UNIQUE (user_id, movie_id)
     );
 
-CREATE TABLE
-    messages (
-        message_id SERIAL PRIMARY KEY,
-        message TEXT NOT NULL,
-        group_id INT NOT NULL,
-        user_id INT NOT NULL,
-        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
-    );
+--New 
+CREATE TABLE messages (
+    message_id SERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    group_id INT NOT NULL,
+    user_id INT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tagged_users JSONB DEFAULT '[]',
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES groups (group_id) ON DELETE CASCADE
+);
+
+
+-- CREATE TABLE
+--     messages (
+--         message_id SERIAL PRIMARY KEY,
+--         message TEXT NOT NULL,
+--         group_id INT NOT NULL,
+--         user_id INT NOT NULL,
+--         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--         FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+--     );

@@ -11,7 +11,8 @@ const ratingRouter = require("./src/routes/ratingRoutes.js");
 const postRouter = require("./src/routes/postRoutes.js");
 const groupMoviesRouter = require("./src/routes/groupMoviesRoutes.js");
 const favouriteRouter = require("./src/routes/favouriteRoutes.js");
-const editProfileRoutes = require('./src/routes/editProfileRoutes');
+const editProfileRoutes = require("./src/routes/editProfileRoutes");
+const reviewAllRouter = require("./src/routes/reviewAllRoutes.js");
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -39,6 +40,8 @@ app.use("/forum", postRouter);
 app.use("/favorites", favouriteRouter);
 
 app.use("/Customgroup", groupMoviesRouter);
+
+app.use("/reviewsAll", reviewAllRouter);
 
 app.use(editProfileRoutes);
 

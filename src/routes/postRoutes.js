@@ -1,5 +1,7 @@
 const express = require("express");
 const { authToken } = require("../../config/auth");
+
+const postRouter = express.Router();
 const {
   fetchPosts,
   createPost,
@@ -8,21 +10,19 @@ const {
   searchUsersController,
 } = require("../controllers/postController");
 
-const postRouter = express.Router();
+// Search users for tagging
+postRouter.get("/search", authToken, searchUsersController);
 
-// GET to fetch posts from db (group_id)
+// Fetch all posts for a group
 postRouter.get("/:id", fetchPosts);
 
-// POST to add a new post
+// Create a post
 postRouter.post("/", authToken, createPost);
 
-// PUT to edit a post in db (message_id)
-postRouter.put("/:id", editPost);
+// Edit a specific post
+postRouter.put("/:id", authToken, editPost);
 
-// DELETE to delete a post from db (message_id)
-postRouter.delete("/:id", deletePost);
-
-// tag member
-postRouter.get("/api/users", searchUsersController);
+// Delete a specific post
+postRouter.delete("/:id", authToken, deletePost);
 
 module.exports = postRouter;

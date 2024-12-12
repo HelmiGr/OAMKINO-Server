@@ -73,6 +73,22 @@ describe("POST /users/login", () => {
     expect(data).to.include.all.keys("userId", "email", "token");
     expect(data.email).to.equal(email);
   });
+
+  it("should return 400 when logging in with a non-existent email", async () => {
+    const nonExistentEmail = "nonexistent@example.com";
+    const response = await fetch(base_url + "users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: nonExistentEmail, password }),
+    });
+
+    const data = await response.json();
+    expect(response.status).to.equal(400); // Expect Bad Request
+    expect(data).to.be.an("object");
+    expect(data).to.have.property("error", "Invalid email or password");
+  });
 });
 
 describe("POST /users/logout", () => {
@@ -170,5 +186,68 @@ describe("DELETE /users/delete/:userId", () => {
 
     expect(response.status).to.equal(403);
     expect(data).to.have.property("message").that.equals("Invalid token.");
+  });
+});
+
+describe("GET /reviews/all - Fetch all reviews", () => {
+  it("should fetch all reviews as an array", async () => {
+    const response = await fetch(base_url + `reviews/all`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).catch((error) => {
+      console.error("Fetch error:", error);
+      throw error;
+    });
+
+    if (response) {
+      const reviews = await response.json().catch((error) => {
+        console.error("JSON parsing error:", error);
+        throw error;
+      });
+
+      expect(response.status).to.equal(200);
+      expect(Array.isArray(reviews)).to.be.true;
+      if (reviews.length > 0) {
+        expect(reviews[0]).to.include.keys(
+          "review_id",
+          "review",
+          "timestamp",
+          "movie_name",
+          "reviewer_email"
+        );
+      }
+    }
+  });
+
+  // Negative test for an invalid endpoint
+  it("should return 404 for an invalid endpoint", async () => {
+    let response;
+    try {
+      response = await fetch(base_url + `reviews/invalid-endpoint`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+
+    expect(response.status).to.equal(404);
+    let errorResponse;
+    try {
+      errorResponse = await response.json();
+    } catch (jsonError) {
+      console.error(
+        "Non-JSON error response, likely an HTML error page:",
+        jsonError
+      );
+    }
+
+    if (errorResponse) {
+      expect(errorResponse).to.have.property("error");
+    }
   });
 });
