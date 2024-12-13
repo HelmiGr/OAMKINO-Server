@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const { authToken } = require("./config/auth.js"); // get the authentication working
 
-
 // Routers
 const userRouter = require("./src/routes/userRoutes.js");
 const groupRouter = require("./src/routes/groupRoutes.js");
@@ -19,6 +18,10 @@ const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the Render server!");
+}); //for test render backend
 
 //authentication should be working
 app.get("/protected", authToken, (req, res) => {
