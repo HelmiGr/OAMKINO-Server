@@ -2,12 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const { authToken } = require("./config/auth.js"); // get the authentication working
 
-// possible fix for deployment
-const corsOptions = {
-  origin: '*', 
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization',
-};
 
 // Routers
 const userRouter = require("./src/routes/userRoutes.js");
@@ -23,7 +17,7 @@ const reviewAllRouter = require("./src/routes/reviewAllRoutes.js");
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 //authentication should be working
