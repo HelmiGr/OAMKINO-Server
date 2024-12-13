@@ -19,10 +19,6 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the Render server!");
-}); //for test render backend
-
 //authentication should be working
 app.get("/protected", authToken, (req, res) => {
   res.json({
