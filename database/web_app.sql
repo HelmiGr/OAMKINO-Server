@@ -21,7 +21,7 @@ CREATE TABLE
     GroupMemberships (
         group_id INT REFERENCES Groups (group_id) ON DELETE CASCADE,
         user_id INT REFERENCES Users (user_id) ON DELETE CASCADE,
-        role VARCHAR(50) CHECK (role IN ('Admin', 'Nember', 'pending')), -- Roles are separate from status
+        role VARCHAR(50) CHECK (role IN ('Admin', 'Member', 'pending')), -- Roles are separate from status
         status VARCHAR(50) DEFAULT 'pending' CHECK (
             status IN ('pending', 'accepted', 'rejected', 'invited')
         ), -- Membership status
