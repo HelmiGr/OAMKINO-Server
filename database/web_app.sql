@@ -21,7 +21,7 @@ CREATE TABLE
     GroupMemberships (
         group_id INT REFERENCES Groups (group_id) ON DELETE CASCADE,
         user_id INT REFERENCES Users (user_id) ON DELETE CASCADE,
-        role VARCHAR(50) CHECK (role IN ('Admin', 'Member', 'pending')), -- Roles are separate from status
+        role VARCHAR(50) CHECK (role IN ('admin', 'member', 'pending')), -- Roles are separate from status
         status VARCHAR(50) DEFAULT 'pending' CHECK (
             status IN ('pending', 'accepted', 'rejected', 'invited')
         ), -- Membership status
@@ -37,8 +37,8 @@ CREATE TABLE
         movie_id VARCHAR(255) NOT NULL,
         added_by INT NOT NULL,
         added_at TIMESTAMP DEFAULT NOW (),
-        FOREIGN KEY (group_id) REFERENCES Groups (group_id) ON DELETE CASCADE, -- Xóa nhóm sẽ xóa bản ghi này
-        FOREIGN KEY (added_by) REFERENCES Users (user_id) ON DELETE CASCADE -- Xóa người dùng sẽ xóa bản ghi này
+        FOREIGN KEY (group_id) REFERENCES Groups (group_id) ON DELETE CASCADE, 
+        FOREIGN KEY (added_by) REFERENCES Users (user_id) ON DELETE CASCADE
     );
 
 -- Movies table
